@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>ぴよドローンレース</title>
+<title>ぴよドローン スカイアタック</title>
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;}
@@ -12,64 +12,69 @@ html,body{width:100%;height:100%;overflow:hidden;background:#8fd3ff;font-family:
 #game{position:fixed;inset:0;width:100%;height:100%;display:block;touch-action:none;}
 .chip{background:rgba(0,0,0,0.45);color:#fff;border-radius:14px;padding:6px 14px;font-weight:700;font-size:18px;line-height:1.3;}
 #hud{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);left:0;right:0;display:flex;justify-content:center;gap:10px;pointer-events:none;z-index:5;}
-#mm{position:fixed;left:10px;top:calc(env(safe-area-inset-top,0px) + 10px);width:120px;height:120px;z-index:5;pointer-events:none;}
-#spd{position:fixed;right:14px;bottom:130px;z-index:5;pointer-events:none;font-size:22px;}
-.rbtn{position:fixed;z-index:6;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;touch-action:none;cursor:pointer;}
-#btnL,#btnR{bottom:calc(env(safe-area-inset-bottom,0px) + 26px);width:100px;height:100px;border-radius:50%;background:rgba(255,255,255,0.22);border:3px solid rgba(255,255,255,0.85);font-size:44px;}
-#btnL{left:24px;}
-#btnR{right:24px;}
-#btnReset{right:14px;top:calc(env(safe-area-inset-top,0px) + 10px);padding:10px 12px;border-radius:12px;background:rgba(0,0,0,0.45);font-size:15px;min-height:44px;}
-#btnMute{right:14px;top:calc(env(safe-area-inset-top,0px) + 62px);padding:10px 14px;border-radius:12px;background:rgba(0,0,0,0.45);font-size:18px;min-height:44px;}
+#mm{position:fixed;left:10px;top:calc(env(safe-area-inset-top,0px) + 10px);width:110px;height:110px;z-index:5;pointer-events:none;}
+#spd{position:fixed;right:14px;top:calc(env(safe-area-inset-top,0px) + 10px);z-index:5;pointer-events:none;font-size:18px;}
+.rbtn{position:fixed;z-index:6;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;touch-action:none;cursor:pointer;
+  width:96px;height:96px;border-radius:50%;background:rgba(255,255,255,0.22);border:3px solid rgba(255,255,255,0.85);font-size:42px;
+  bottom:calc(env(safe-area-inset-bottom,0px) + 26px);}
+#btnL{left:20px;}
+#btnR{left:132px;}
+#btnU{right:20px;bottom:calc(env(safe-area-inset-bottom,0px) + 128px);}
+#btnD{right:20px;}
 #cd{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:110px;font-weight:700;color:#fff;text-shadow:0 4px 18px rgba(0,0,0,0.5);pointer-events:none;z-index:8;}
-#popup{position:fixed;top:26%;left:0;right:0;text-align:center;font-size:34px;font-weight:700;color:#ffec6e;text-shadow:0 3px 10px rgba(0,0,0,0.6);pointer-events:none;opacity:0;transform:scale(0.9);transition:opacity .25s, transform .25s;z-index:8;}
+#popup{position:fixed;top:24%;left:0;right:0;text-align:center;font-size:34px;font-weight:700;color:#ffec6e;text-shadow:0 3px 10px rgba(0,0,0,0.6);pointer-events:none;opacity:0;transform:scale(0.9);transition:opacity .25s, transform .25s;z-index:8;}
 #popup.show{opacity:1;transform:scale(1.08);}
 .ov{position:fixed;inset:0;background:rgba(20,40,70,0.65);display:flex;align-items:center;justify-content:center;z-index:10;}
-.panel{background:#fff;border-radius:24px;padding:30px 34px;text-align:center;max-width:86%;box-shadow:0 10px 40px rgba(0,0,0,0.35);}
-.panel h1{font-size:34px;color:#2a7fe8;margin-bottom:8px;}
+.panel{background:#fff;border-radius:24px;padding:30px 34px;text-align:center;max-width:88%;box-shadow:0 10px 40px rgba(0,0,0,0.35);}
+.panel h1{font-size:32px;color:#2a7fe8;margin-bottom:8px;}
 .panel p{font-size:17px;color:#444;margin:6px 0;}
 .bigbtn{margin-top:16px;display:inline-block;background:#2a7fe8;color:#fff;font-size:24px;font-weight:700;padding:14px 46px;border-radius:40px;border:none;font-family:inherit;cursor:pointer;min-height:44px;}
 .bigbtn:active{transform:scale(0.96);}
-#rankBig{font-size:56px;font-weight:700;color:#e8a01e;margin:10px 0;}
+#resTimeBig{font-size:48px;font-weight:700;color:#2a7fe8;margin:8px 0;}
+#resBest{font-size:20px;color:#e8a01e;font-weight:700;margin:4px 0;min-height:26px;}
 .hidden{display:none !important;}
 </style>
 </head>
 <body>
 <canvas id="game"></canvas>
-<canvas id="mm" width="240" height="240"></canvas>
+<canvas id="mm" width="220" height="220"></canvas>
 <div id="hud">
   <div class="chip" id="lapEl">LAP 1/3</div>
   <div class="chip" id="timeEl">0:00.00</div>
-  <div class="chip" id="rankEl">-位/4</div>
+  <div class="chip" id="starEl">⭐0</div>
 </div>
 <div class="chip" id="spd">0 km/h</div>
 <div class="rbtn" id="btnL">◀</div>
 <div class="rbtn" id="btnR">▶</div>
-<div class="rbtn" id="btnReset">コースへもどる</div>
-<div class="rbtn" id="btnMute">🔊</div>
+<div class="rbtn" id="btnU">▲</div>
+<div class="rbtn" id="btnD">▼</div>
 <div id="cd"></div>
 <div id="popup"></div>
 <div class="ov" id="titleOv">
   <div class="panel">
-    <h1>🚁 ぴよドローンレース</h1>
-    <p>空とぶドローンでコースを3しゅう！ ライバルより先にゴールしよう！</p>
-    <p>◀▶ボタンでハンドル(アクセルは自動)</p>
-    <p>コースの外に出るとスピードが落ちるよ。<br>コースの上をとんでいこう！</p>
+    <h1>🚁 ぴよドローン スカイアタック</h1>
+    <p>空のコースを3しゅう！ タイムアタックだ！</p>
+    <p>◀▶で左右、▲▼で上下にうごくよ(前には自動ですすむ)</p>
+    <p>✨リングをくぐると<b>スピードアップ</b>！<br>🧱かべは よけよう！ ⭐スターもあつめてね</p>
+    <p id="titleBest" style="color:#e8a01e;font-weight:700;"></p>
     <button class="bigbtn" id="btnStart">スタート！</button>
   </div>
 </div>
 <div class="ov hidden" id="resultOv">
   <div class="panel">
     <h1>🏁 ゴール！</h1>
-    <div id="rankBig">1位</div>
-    <p id="resTime">タイム 0:00.00</p>
+    <div id="resTimeBig">0:00.00</div>
+    <div id="resBest"></div>
+    <p id="resStar">⭐ 0こ / 16こ</p>
+    <p id="resRing">✨ リング 0回</p>
     <button class="bigbtn" id="btnAgain">もういちど</button>
   </div>
 </div>
 <script type="module">
-// ぴよドローンレース v1.0 (2026-07-07)
-// piyo-cross のコース進行(u座標)/ラップ/順位ロジック + drone-delivery のドローン機体ビジュアル
-// 物理エンジンは不使用: 高さは「地面+固定オフセット+サイン波」の演出のみ
-// Three.js / 120Hz対応deltaTimeクランプ / Web Audio生成サウンド
+// ぴよドローン スカイアタック v1.0 (2026-07-08)
+// piyo-crossのu座標進行+ラップ判定 / drone-deliveryの機体ビジュアル
+// 敵なしタイムアタック。前進自動+上下左右移動で「くぐる・よける・とる」
+// 物理エンジン不使用 / dt 1/30クランプ(120Hz対応) / サウンドなし
 import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js';
 
 // ===== 基本セットアップ =====
@@ -98,8 +103,10 @@ const clamp = (v,a,b)=>Math.min(b,Math.max(a,v));
 const wrap01 = v=>{ v%=1; if(v<0)v+=1; return v; };
 const sstep = t=>{ t=clamp(t,0,1); return t*t*(3-2*t); };
 const lerp = (a,b,t)=>a+(b-a)*t;
+// -0.5〜0.5 の符号付きu差分
+const uDiff = (a,b)=>{ let d = wrap01(a)-wrap01(b); if(d>0.5)d-=1; if(d<-0.5)d+=1; return d; };
 
-// ===== 地形(数式ハイトフィールド) =====
+// ===== 地形 =====
 function terrainH(x,z){
   return 2.4*Math.sin(x*0.045)*Math.cos(z*0.038)
        + 1.5*Math.sin(x*0.09+1.7)*Math.sin(z*0.071+0.6)
@@ -133,65 +140,26 @@ function trackYat(u){
   const f = wrap01(u)*N, i = Math.floor(f)%N, j = (i+1)%N, t = f-i;
   return samples[i].pos.y*(1-t) + samples[j].pos.y*t;
 }
-
-// ===== 地形のうねり(丘)形状: ドローンは高さ追従するだけの演出 =====
-function rampF(u, s0, up, flat, down, h){
-  const p = wrap01(u-s0), total = up+flat+down;
-  if(p > total) return 0;
-  if(p < up) return h*sstep(p/up);
-  if(p < up+flat) return h;
-  return h*(1-sstep((p-up-flat)/down));
+const _sp = {x:0, z:0, tx:0, tz:0, lx:0, lz:0};
+function samplePos(u, out){
+  const f = wrap01(u)*N, i = Math.floor(f)%N, j = (i+1)%N, t = f-i;
+  const a = samples[i], b = samples[j];
+  out.x = a.pos.x*(1-t)+b.pos.x*t;
+  out.z = a.pos.z*(1-t)+b.pos.z*t;
+  out.tx = a.tan.x*(1-t)+b.tan.x*t;
+  out.tz = a.tan.z*(1-t)+b.tan.z*t;
+  out.lx = a.left.x*(1-t)+b.left.x*t;
+  out.lz = a.left.z*(1-t)+b.left.z*t;
+  return out;
 }
-const HILLS = [
-  {s:0.125, up:0.014, flat:0.006, down:0.018, h:2.2},
-  {s:0.315, up:0.015, flat:0.007, down:0.019, h:2.8},
-  {s:0.615, up:0.013, flat:0.005, down:0.016, h:1.9},
-  {s:0.855, up:0.016, flat:0.007, down:0.021, h:3.0}
-];
-function featureH(u){
-  u = wrap01(u);
-  let h = 0;
-  for(const j of HILLS) h += rampF(u, j.s, j.up, j.flat, j.down, j.h);
-  return h;
+// コース上(u, lat)の基準高さ: トラック高と地形高の高いほう
+const _b = {x:0,z:0,tx:0,tz:0,lx:0,lz:0};
+function baseAt(u, lat){
+  samplePos(u, _b);
+  const x = _b.x + _b.lx*lat, z = _b.z + _b.lz*lat;
+  return Math.max(trackYat(u), terrainH(x,z)+grassBump(x,z));
 }
-
-// ===== 地面高さ問い合わせ =====
-const HALF = 6, BLEND = 16;
-function nearestSample(x, z, hint){
-  let best = 0, bd = Infinity;
-  if(hint >= 0){
-    for(let k=-32;k<=32;k++){
-      const i = (hint+k+N)%N, s = samples[i];
-      const dx = x-s.pos.x, dz = z-s.pos.z, d = dx*dx+dz*dz;
-      if(d < bd){ bd = d; best = i; }
-    }
-    if(bd < 900) return best;
-  }
-  bd = Infinity;
-  for(let i=0;i<N;i++){
-    const s = samples[i];
-    const dx = x-s.pos.x, dz = z-s.pos.z, d = dx*dx+dz*dz;
-    if(d < bd){ bd = d; best = i; }
-  }
-  return best;
-}
-function groundInfo(x, z, hint){
-  const idx = nearestSample(x, z, hint===undefined?-1:hint);
-  const s = samples[idx];
-  const dx = x-s.pos.x, dz = z-s.pos.z;
-  const lat = dx*s.left.x + dz*s.left.z;
-  const along = dx*s.tan.x + dz*s.tan.z;
-  const u = wrap01(s.u + along/trackLen);
-  const dist = Math.abs(lat);
-  const tH = trackYat(u) + featureH(u);
-  let h;
-  if(dist <= HALF) h = tH;
-  else if(dist < BLEND){
-    const t = sstep((dist-HALF)/(BLEND-HALF));
-    h = tH*(1-t) + (terrainH(x,z)+grassBump(x,z))*t;
-  } else h = terrainH(x,z)+grassBump(x,z);
-  return {h, idx, u, lat, dist};
-}
+function yawAt(u){ samplePos(u, _b); return Math.atan2(_b.tx, _b.tz); }
 
 // ===== 地形メッシュ =====
 {
@@ -200,17 +168,13 @@ function groundInfo(x, z, hint){
   geo.rotateX(-Math.PI/2);
   const pos = geo.attributes.position;
   const col = new Float32Array(pos.count*3);
-  const grass = new THREE.Color(), dirt = new THREE.Color(0x8f6f45), tmp = new THREE.Color();
+  const tmp = new THREE.Color();
   for(let i=0;i<pos.count;i++){
     const x = pos.getX(i), z = pos.getZ(i);
-    const gi = groundInfo(x, z);
-    pos.setY(i, gi.h);
-    const g = clamp(0.62+gi.h*0.05, 0.42, 0.85);
-    grass.setRGB(0.30*g, 0.55*g, 0.22*g);
-    if(gi.dist < BLEND){
-      const tt = sstep((gi.dist-HALF)/(BLEND-HALF));
-      tmp.lerpColors(dirt, grass, tt);
-    } else tmp.copy(grass);
+    const h = terrainH(x,z)+grassBump(x,z);
+    pos.setY(i, h);
+    const g = clamp(0.62+h*0.05, 0.42, 0.85);
+    tmp.setRGB(0.30*g, 0.55*g, 0.22*g);
     col[i*3] = tmp.r; col[i*3+1] = tmp.g; col[i*3+2] = tmp.b;
   }
   geo.setAttribute('color', new THREE.BufferAttribute(col, 3));
@@ -218,50 +182,32 @@ function groundInfo(x, z, hint){
   scene.add(new THREE.Mesh(geo, new THREE.MeshLambertMaterial({vertexColors:true})));
 }
 
-// ===== コースリボン(空のレース路: 青系のフライトレーン) =====
+// ===== ガイドの光の点(道路の代わりにコースを教える) =====
 {
-  const M = 400;
-  const lats = [-HALF, -HALF+0.9, 0, HALF-0.9, HALF];
-  const cc = [[0.95,0.95,0.95],[0.25,0.42,0.75],[0.42,0.62,0.92],[0.25,0.42,0.75],[0.95,0.95,0.95]];
-  const posA = [], colA = [], idx = [];
-  for(let r=0;r<M;r++){
-    const s = samples[r*2];
-    const y = trackYat(s.u) + featureH(s.u) + 0.07;
-    const sh = 0.92 + 0.08*Math.sin(r*0.7);
-    for(let c=0;c<5;c++){
-      posA.push(s.pos.x+s.left.x*lats[c], y, s.pos.z+s.left.z*lats[c]);
-      colA.push(cc[c][0]*sh, cc[c][1]*sh, cc[c][2]*sh);
-    }
+  const cnt = Math.floor(N/6);
+  const dots = new THREE.InstancedMesh(new THREE.SphereGeometry(0.16, 8, 6),
+    new THREE.MeshBasicMaterial({color:0xffffff, transparent:true, opacity:0.65}), cnt);
+  const m = new THREE.Matrix4(), v = new THREE.Vector3();
+  let k = 0;
+  for(let i=0;i<N;i+=6){
+    const s = samples[i];
+    const y = baseAt(s.u, 0) + 0.6;
+    m.setPosition(v.set(s.pos.x, y, s.pos.z));
+    dots.setMatrixAt(k++, m);
   }
-  for(let r=0;r<M;r++){
-    const r2 = (r+1)%M;
-    for(let c=0;c<4;c++){
-      const a = r*5+c, b = a+1, d = r2*5+c, e = d+1;
-      idx.push(a,d,b, b,d,e);
-    }
-  }
-  const g = new THREE.BufferGeometry();
-  g.setAttribute('position', new THREE.Float32BufferAttribute(posA, 3));
-  g.setAttribute('color', new THREE.Float32BufferAttribute(colA, 3));
-  g.setIndex(idx);
-  g.computeVertexNormals();
-  scene.add(new THREE.Mesh(g, new THREE.MeshLambertMaterial({vertexColors:true, side:THREE.DoubleSide})));
+  scene.add(dots);
 }
 
-// ===== スタートライン・ゲート =====
+// ===== スタートゲート =====
 {
   const s = samples[0];
-  const yaw = Math.atan2(s.tan.x, s.tan.z);
-  const baseY = trackYat(0) + featureH(0);
-  const line = new THREE.Mesh(new THREE.BoxGeometry(HALF*2, 0.06, 1.4), new THREE.MeshLambertMaterial({color:0xffffff}));
-  line.position.set(s.pos.x, baseY+0.12, s.pos.z);
-  line.rotation.y = yaw;
-  scene.add(line);
-  const postG = new THREE.CylinderGeometry(0.25, 0.25, 6.5, 10);
+  const yaw = yawAt(0);
+  const baseY = baseAt(0, 0);
+  const postG = new THREE.CylinderGeometry(0.25, 0.25, 7.5, 10);
   const postM = new THREE.MeshLambertMaterial({color:0xdddddd});
   for(const sd of [-1,1]){
     const p = new THREE.Mesh(postG, postM);
-    p.position.set(s.pos.x+s.left.x*7.2*sd, baseY+3.2, s.pos.z+s.left.z*7.2*sd);
+    p.position.set(s.pos.x+s.left.x*7.2*sd, baseY+3.75, s.pos.z+s.left.z*7.2*sd);
     scene.add(p);
   }
   const cv = document.createElement('canvas'); cv.width=512; cv.height=96;
@@ -270,54 +216,42 @@ function groundInfo(x, z, hint){
   cx.fillStyle='#fff'; cx.font='bold 64px sans-serif'; cx.textAlign='center'; cx.textBaseline='middle';
   cx.fillText('START', 256, 50);
   const ban = new THREE.Mesh(new THREE.BoxGeometry(15.6, 1.6, 0.2), new THREE.MeshBasicMaterial({map:new THREE.CanvasTexture(cv)}));
-  ban.position.set(s.pos.x, baseY+5.9, s.pos.z);
+  ban.position.set(s.pos.x, baseY+7.0, s.pos.z);
   ban.rotation.y = yaw;
   scene.add(ban);
 }
 
-// ===== コース脇の旗ポール(インスタンス) =====
-{
-  const step = 25, count = Math.floor(N/step)*2;
-  const poles = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.07,0.07,1.3,6), new THREE.MeshLambertMaterial({color:0xf5f5f5}), count);
-  const flags = new THREE.InstancedMesh(new THREE.BoxGeometry(0.55,0.38,0.06), new THREE.MeshLambertMaterial({color:0x2a7fe8}), count);
-  const m = new THREE.Matrix4(), q = new THREE.Quaternion(), up = new THREE.Vector3(0,1,0), one = new THREE.Vector3(1,1,1), v = new THREE.Vector3();
-  let k = 0;
-  for(let i=0;i<N;i+=step){
-    const s = samples[i], yaw = Math.atan2(s.tan.x, s.tan.z);
-    for(const sd of [-1,1]){
-      const gx = s.pos.x+s.left.x*(HALF+1.6)*sd, gz = s.pos.z+s.left.z*(HALF+1.6)*sd;
-      const gy = groundInfo(gx, gz, i).h;
-      q.setFromAxisAngle(up, yaw);
-      m.compose(v.set(gx, gy+0.65, gz), q, one); poles.setMatrixAt(k, m);
-      m.compose(v.set(gx, gy+1.35, gz), q, one); flags.setMatrixAt(k, m);
-      k++;
-    }
-  }
-  scene.add(poles); scene.add(flags);
-}
-
-// ===== 木・岩(インスタンス) =====
+// ===== 木・岩 =====
 {
   const NT = 70, NR = 26;
   const trunks = new THREE.InstancedMesh(new THREE.CylinderGeometry(0.28,0.4,1.8,7), new THREE.MeshLambertMaterial({color:0x7a5230}), NT);
   const leaves = new THREE.InstancedMesh(new THREE.ConeGeometry(1.7,3.4,8), new THREE.MeshLambertMaterial({color:0x3f8f3f}), NT);
   const rocks = new THREE.InstancedMesh(new THREE.DodecahedronGeometry(0.9), new THREE.MeshLambertMaterial({color:0x9a9a9a}), NR);
   const m = new THREE.Matrix4(), q = new THREE.Quaternion(), up = new THREE.Vector3(0,1,0), v = new THREE.Vector3(), sc = new THREE.Vector3();
+  // コースから離す判定用: サンプル総当たりだと重いので粗く
+  function nearTrack(x, z){
+    for(let i=0;i<N;i+=8){
+      const s = samples[i];
+      const dx = x-s.pos.x, dz = z-s.pos.z;
+      if(dx*dx+dz*dz < 12*12) return true;
+    }
+    return false;
+  }
   let pT = 0, pR = 0, guard = 0;
-  while((pT<NT || pR<NR) && guard++<3000){
+  while((pT<NT || pR<NR) && guard++<4000){
     const x = (Math.random()*2-1)*185, z = (Math.random()*2-1)*185;
     if(Math.hypot(x,z) > 185) continue;
-    const gi = groundInfo(x, z);
-    if(gi.dist < HALF+5) continue;
+    if(nearTrack(x, z)) continue;
+    const h = terrainH(x,z)+grassBump(x,z);
     q.setFromAxisAngle(up, Math.random()*6.28);
     if(pT < NT){
       const s2 = 0.7+Math.random()*0.9;
-      m.compose(v.set(x, gi.h+0.9*s2, z), q, sc.set(s2,s2,s2)); trunks.setMatrixAt(pT, m);
-      m.compose(v.set(x, gi.h+3.4*s2, z), q, sc.set(s2,s2,s2)); leaves.setMatrixAt(pT, m);
+      m.compose(v.set(x, h+0.9*s2, z), q, sc.set(s2,s2,s2)); trunks.setMatrixAt(pT, m);
+      m.compose(v.set(x, h+3.4*s2, z), q, sc.set(s2,s2,s2)); leaves.setMatrixAt(pT, m);
       pT++;
     } else {
       const s2 = 0.5+Math.random()*1.1;
-      m.compose(v.set(x, gi.h+0.3*s2, z), q, sc.set(s2, s2*0.7, s2)); rocks.setMatrixAt(pR, m);
+      m.compose(v.set(x, h+0.3*s2, z), q, sc.set(s2, s2*0.7, s2)); rocks.setMatrixAt(pR, m);
       pR++;
     }
   }
@@ -336,22 +270,20 @@ function groundInfo(x, z, hint){
   }
 }
 
-// ===== ドローン機体作成(drone-deliveryのビジュアル流用/前方=+Z) =====
+// ===== ドローン機体(drone-deliveryビジュアル/前方=+Z) =====
 function buildDrone(bodyColor, propColor){
   const g = new THREE.Group();
   g.rotation.order = 'YXZ';
-  const inner = new THREE.Group();       // スケール/装飾用
-  inner.scale.set(1.9, 1.9, 1.9);        // レースで見やすいよう少し大きめ
+  const inner = new THREE.Group();
+  inner.scale.set(1.9, 1.9, 1.9);
   g.add(inner);
   const bodyMat = new THREE.MeshLambertMaterial({color:bodyColor});
   const armMat  = new THREE.MeshLambertMaterial({color:0x3a4a70});
   const core = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.16, 0.42), bodyMat);
   inner.add(core);
-  // カメラ風の前面パーツ(前方向 +Z)
   const eye = new THREE.Mesh(new THREE.SphereGeometry(0.07, 12, 12), new THREE.MeshLambertMaterial({color:0x222233}));
   eye.position.set(0, 0, 0.24);
   inner.add(eye);
-  // アーム&プロペラ ×4
   const props = [];
   const offs = [[-0.32,-0.32],[0.32,-0.32],[-0.32,0.32],[0.32,0.32]];
   for(const [x,z] of offs){
@@ -365,7 +297,6 @@ function buildDrone(bodyColor, propColor){
     inner.add(prop);
     props.push(prop);
   }
-  // 脚
   for(const sx of [-1,1]){
     const leg = new THREE.Mesh(new THREE.BoxGeometry(0.05, 0.14, 0.4), armMat);
     leg.position.set(sx*0.18, -0.16, 0);
@@ -378,72 +309,160 @@ function buildDrone(bodyColor, propColor){
   return {group:g, props, shadow:sh};
 }
 
-// ===== レーサー初期化 =====
-const HOVER = 1.5;          // 地面からの固定オフセット(演出用)
-const BOB_AMP = 0.16;       // ふわふわの振幅
-const START_IDX = N-12;
-const SLOTS = [4.2, 1.4, -1.4, -4.2];
-const startU = START_IDX/N;
-function slotPos(sl){
-  const s = samples[START_IDX];
-  return {
-    x: s.pos.x + s.left.x*SLOTS[sl],
-    z: s.pos.z + s.left.z*SLOTS[sl],
-    heading: Math.atan2(s.tan.x, s.tan.z)
-  };
-}
-const pv = buildDrone(0xffb63b, 0xeeeeee);
-const player = {vis:pv, x:0, z:0, y:0, heading:0, speed:0,
-  idx:START_IDX, u:startU, prevU:startU, lap:0, cp:false,
-  finished:false, pitch:0, roll:0, gy:0, gDist:0, bobPhase:0};
-const AI_DEF = [
-  {c:0xd44a9a, p:0xffd0e8, base:21.5},
-  {c:0x2fb06a, p:0xc8f5d8, base:23.5},
-  {c:0x6a4ad4, p:0xd8ccff, base:25.5}
+// ===== ゲーム定数 =====
+const BASE_SP = 25;         // 基本速度 m/s
+const RING_BOOST_T = 1.5;   // リングブースト時間
+const RING_BOOST_MULT = 1.4;
+const FINISH_BOOST_T = 4.0; // フィニッシュブースト
+const FINISH_BOOST_MULT = 1.7;
+const LAT_MAX = 5.0;        // 横移動範囲
+const ALT_MIN = 1.0, ALT_MAX = 6.0;
+const LAT_SPEED = 5.0;      // 横移動速度 m/s
+const ALT_SPEED = 3.6;      // 上下移動速度 m/s
+const HIT_SLOW = 0.35;      // 衝突時の速度倍率
+const HIT_COOL = 1.2;       // 衝突後の無敵時間
+const BOB_AMP = 0.12;
+
+// ===== コースオブジェクト定義 =====
+// リング: u, lat, alt / final=true はゴール前3連続の対象
+const RING_DEFS = [
+  {u:0.05, lat: 0,   alt:2.0}, {u:0.10, lat:-3,   alt:1.6}, {u:0.16, lat: 3,   alt:3.2},
+  {u:0.22, lat: 0,   alt:4.6}, {u:0.28, lat:-2,   alt:2.0}, {u:0.36, lat: 2,   alt:1.6},
+  {u:0.42, lat: 0,   alt:3.6}, {u:0.50, lat:-3,   alt:2.6}, {u:0.56, lat: 3,   alt:4.2},
+  {u:0.64, lat: 0,   alt:1.6}, {u:0.70, lat:-2,   alt:3.2}, {u:0.76, lat: 2,   alt:2.2},
+  {u:0.90, lat: 0,   alt:2.6, final:true},
+  {u:0.93, lat:-1.6, alt:2.6, final:true},
+  {u:0.96, lat: 1.6, alt:2.6, final:true},
 ];
-const AI_SLOTS = [0, 2, 3];
-const ais = AI_DEF.map((d,i)=>({
-  vis: buildDrone(d.c, d.p),
-  colStr: '#'+d.c.toString(16).padStart(6,'0'),
-  base: d.base, uTotal: startU, off:0, startLat:0,
-  phase: Math.random()*6.28, wRate: 0.25+Math.random()*0.2,
-  bobPhase: 1.3+i*2.1, y:0, finished:false, pitch:0, roll:0, gx:0, gz:0
-}));
+// バー障害物: kind 'high'(下をくぐる) / 'low'(上をこえる) / 'wall'(side側がふさがる: 1=左, -1=右)
+const BAR_DEFS = [
+  {u:0.13, kind:'high'}, {u:0.19, kind:'low'},  {u:0.32, kind:'wall', side: 1},
+  {u:0.47, kind:'high'}, {u:0.53, kind:'low'},  {u:0.60, kind:'wall', side:-1},
+  {u:0.73, kind:'high'}, {u:0.80, kind:'wall', side: 1}, {u:0.84, kind:'low'},
+];
+// スター: とるとカウント(1レース1回)
+const STAR_DEFS = [
+  [0.03, 2, 3.5],[0.075,-1.5,2.0],[0.135,0,1.5],[0.19,0,3.8],[0.25,2,4.5],
+  [0.31,-3,2.0],[0.39,-2,2.8],[0.455,0,1.4],[0.52,2,3.5],[0.585,-2,1.8],
+  [0.62,3,2.5],[0.67,0,4.8],[0.735,-3,3.0],[0.80,-3,2.0],[0.865,0,4.2],[0.915,1.5,1.6],
+];
+// 風ゾーン: u範囲と横に流す力(+が左方向)
+const WIND_DEFS = [
+  {a:0.24, b:0.30, push: 2.2},
+  {a:0.66, b:0.72, push:-2.2},
+];
+
+// ===== オブジェクト生成 =====
+const rings = RING_DEFS.map(d=>{
+  const y = baseAt(d.u, d.lat) + d.alt;
+  samplePos(d.u, _b);
+  const mesh = new THREE.Mesh(new THREE.TorusGeometry(1.7, 0.18, 10, 28),
+    new THREE.MeshLambertMaterial({color: d.final?0xffb63b:0x3be0c8, emissive: d.final?0xa06010:0x0a7a6a}));
+  mesh.position.set(_b.x+_b.lx*d.lat, y, _b.z+_b.lz*d.lat);
+  mesh.rotation.y = yawAt(d.u);
+  scene.add(mesh);
+  return {...d, mesh, takenLap:-1};
+});
+const bars = BAR_DEFS.map(d=>{
+  samplePos(d.u, _b);
+  const yaw = yawAt(d.u);
+  const cx0 = _b.x, cz0 = _b.z, lx = _b.lx, lz = _b.lz;
+  const base = baseAt(d.u, 0);
+  const grp = new THREE.Group();
+  const mat = new THREE.MeshLambertMaterial({color:0xe86a5a});
+  const postM = new THREE.MeshLambertMaterial({color:0xbbbbbb});
+  if(d.kind === 'high'){
+    // 上の壁: alt 2.8〜6.6 をふさぐ → 下(低空)をくぐる
+    const w = new THREE.Mesh(new THREE.BoxGeometry(LAT_MAX*2+2.4, 3.8, 0.5), mat);
+    w.position.set(cx0, base+2.8+1.9, cz0);
+    w.rotation.y = yaw; grp.add(w);
+  } else if(d.kind === 'low'){
+    // 下の壁: alt 0〜2.3 をふさぐ → 上をこえる
+    const w = new THREE.Mesh(new THREE.BoxGeometry(LAT_MAX*2+2.4, 2.3, 0.5), mat);
+    w.position.set(cx0, base+1.15, cz0);
+    w.rotation.y = yaw; grp.add(w);
+  } else {
+    // 半分の壁: side側(lat*side > -0.4)をふさぐ → 反対側へよける
+    const w = new THREE.Mesh(new THREE.BoxGeometry(LAT_MAX+1.8, 6.2, 0.5), mat);
+    const off = (LAT_MAX+1.8)/2 - 0.4;
+    w.position.set(cx0+lx*off*d.side, base+3.1, cz0+lz*off*d.side);
+    w.rotation.y = yaw; grp.add(w);
+  }
+  // 両端の支柱
+  for(const sd of [-1,1]){
+    const p = new THREE.Mesh(new THREE.CylinderGeometry(0.18,0.18,7.0,8), postM);
+    p.position.set(cx0+lx*(LAT_MAX+1.4)*sd, base+3.5, cz0+lz*(LAT_MAX+1.4)*sd);
+    grp.add(p);
+  }
+  scene.add(grp);
+  return {...d, grp, hitLap:-1};
+});
+const stars = STAR_DEFS.map(([u,lat,alt])=>{
+  const y = baseAt(u, lat) + alt;
+  samplePos(u, _b);
+  const mesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.5),
+    new THREE.MeshLambertMaterial({color:0xffd94a, emissive:0x9a7a10}));
+  mesh.position.set(_b.x+_b.lx*lat, y, _b.z+_b.lz*lat);
+  scene.add(mesh);
+  return {u, lat, alt, mesh, taken:false};
+});
+// 風ゾーンの見た目: 半透明の帯+流れる矢印スプライト
+const windArrows = [];
+for(const w of WIND_DEFS){
+  const segs = 7;
+  for(let i=0;i<=segs;i++){
+    const u = w.a + (w.b-w.a)*i/segs;
+    samplePos(u, _b);
+    const plane = new THREE.Mesh(new THREE.PlaneGeometry(LAT_MAX*2+3, 5.6),
+      new THREE.MeshBasicMaterial({color:0x9adfff, transparent:true, opacity:0.14, side:THREE.DoubleSide, depthWrite:false}));
+    plane.position.set(_b.x, baseAt(u,0)+3.4, _b.z);
+    plane.rotation.y = yawAt(u);
+    scene.add(plane);
+  }
+  for(let i=0;i<8;i++){
+    const sp = new THREE.Sprite(new THREE.SpriteMaterial({color:0xffffff, transparent:true, opacity:0.5}));
+    sp.scale.set(0.7, 0.25, 1);
+    const u = w.a + Math.random()*(w.b-w.a);
+    windArrows.push({sp, zone:w, u, lat:(Math.random()*2-1)*LAT_MAX, alt:1.5+Math.random()*3.5});
+    scene.add(sp);
+  }
+}
+
+// ===== プレイヤー =====
+const pv = buildDrone(0xffb63b, 0xeeeeee);
+const player = {uTotal:0, u:0, prevU:0, lat:0, alt:2.0, speed:0,
+  lap:0, cp:false, finished:false,
+  boostT:0, boostMult:1, hitCool:0, wobble:0,
+  ringCount:0, starCount:0, finalStreak:0,
+  pitch:0, roll:0, x:0, y:0, z:0, heading:0, inWind:false};
 
 // ===== 状態 =====
-let state = 'title', raceTime = 0, countT = 0, lastCount = -1, finishedAI = 0, finalRank = 1;
+let state = 'title', raceTime = 0, countT = 0, lastCount = -1;
 let firstCam = true;
+const START_U = (N-12)/N;
 
-function placeRacers(){
-  const sp = slotPos(1);
-  const gi = groundInfo(sp.x, sp.z, START_IDX);
-  Object.assign(player, {
-    x:sp.x, z:sp.z, y:gi.h+HOVER, heading:sp.heading, speed:0,
-    idx:gi.idx, u:gi.u, prevU:gi.u, lap:0, cp:false,
-    finished:false, pitch:0, roll:0, gy:gi.h, gDist:gi.dist, bobPhase:0
-  });
-  ais.forEach((a, i)=>{
-    const sl = AI_SLOTS[i];
-    a.startLat = SLOTS[sl];
-    a.uTotal = startU;
-    a.off = a.startLat;
-    a.y = trackYat(startU) + featureH(startU) + HOVER;
-    a.finished = false; a.pitch = 0; a.roll = 0;
-    const s = samples[START_IDX];
-    a.gx = s.pos.x + s.left.x*a.startLat;
-    a.gz = s.pos.z + s.left.z*a.startLat;
-  });
+// 自己ベスト(localStorageは使えない環境もあるためtry/catch)
+const BEST_KEY = 'piyoDroneSkyAttackBest';
+function loadBest(){ try{ const v = parseFloat(localStorage.getItem(BEST_KEY)); return isFinite(v)?v:null; }catch(e){ return null; } }
+function saveBest(t){ try{ localStorage.setItem(BEST_KEY, String(t)); }catch(e){} }
+
+function placeRacer(){
+  Object.assign(player, {uTotal:START_U, u:START_U, prevU:START_U, lat:0, alt:2.0, speed:0,
+    lap:0, cp:false, finished:false, boostT:0, boostMult:1, hitCool:0, wobble:0,
+    ringCount:0, starCount:0, finalStreak:0, pitch:0, roll:0, inWind:false});
+  for(const r of rings){ r.takenLap = -1; r.mesh.visible = true; }
+  for(const s of stars){ s.taken = false; s.mesh.visible = true; }
 }
 function resetRace(){
-  placeRacers();
-  raceTime = 0; finishedAI = 0;
+  placeRacer();
+  raceTime = 0;
   document.getElementById('resultOv').classList.add('hidden');
   state = 'count'; countT = 3.4; lastCount = 99;
 }
-placeRacers();
+placeRacer();
 
-// ===== 入力(左右旋回のみ) =====
-const input = {left:false, right:false};
+// ===== 入力(上下左右のみ) =====
+const input = {left:false, right:false, up:false, down:false};
 function bindHold(id, prop){
   const el = document.getElementById(id);
   const on = e=>{ e.preventDefault(); input[prop] = true; };
@@ -454,21 +473,26 @@ function bindHold(id, prop){
   el.addEventListener('pointerleave', off);
 }
 bindHold('btnL','left'); bindHold('btnR','right');
+bindHold('btnU','up'); bindHold('btnD','down');
 window.addEventListener('keydown', e=>{
   if(e.key==='ArrowLeft'){ input.left = true; e.preventDefault(); }
   if(e.key==='ArrowRight'){ input.right = true; e.preventDefault(); }
+  if(e.key==='ArrowUp'){ input.up = true; e.preventDefault(); }
+  if(e.key==='ArrowDown'){ input.down = true; e.preventDefault(); }
 });
 window.addEventListener('keyup', e=>{
   if(e.key==='ArrowLeft') input.left = false;
   if(e.key==='ArrowRight') input.right = false;
+  if(e.key==='ArrowUp') input.up = false;
+  if(e.key==='ArrowDown') input.down = false;
 });
 
-// ===== iPad Safariのジェスチャー無効化(ダブルタップ拡大・ピンチ拡大の防止) =====
+// ===== iPad Safariのジェスチャー無効化(ダブルタップ拡大の防止) =====
 document.addEventListener('touchmove', e=>e.preventDefault(), {passive:false});
 let lastTouchEnd = 0;
 document.addEventListener('touchend', e=>{
   const now = Date.now();
-  if(now - lastTouchEnd < 350) e.preventDefault(); // ダブルタップ拡大防止
+  if(now - lastTouchEnd < 350) e.preventDefault();
   lastTouchEnd = now;
 }, {passive:false});
 document.addEventListener('gesturestart', e=>e.preventDefault());
@@ -477,101 +501,6 @@ document.addEventListener('gestureend', e=>e.preventDefault());
 document.addEventListener('dblclick', e=>e.preventDefault());
 document.addEventListener('contextmenu', e=>e.preventDefault());
 
-document.getElementById('btnReset').addEventListener('pointerdown', e=>{
-  e.preventDefault();
-  if(state !== 'race') return;
-  const s = samples[player.idx];
-  player.x = s.pos.x; player.z = s.pos.z;
-  const gi = groundInfo(player.x, player.z, player.idx);
-  player.y = gi.h + HOVER; player.gy = gi.h;
-  player.heading = Math.atan2(s.tan.x, s.tan.z);
-  player.speed = 6;
-});
-
-// ===== Web Audio =====
-let AC = null, master = null, engGain = null, engO1 = null, engO2 = null, engNoise = null, engBP = null, muted = false;
-const nf = n=>440*Math.pow(2,(n-69)/12);
-function initAudio(){
-  if(AC) return;
-  AC = new (window.AudioContext||window.webkitAudioContext)();
-  master = AC.createGain();
-  master.gain.value = muted?0:0.8;
-  master.connect(AC.destination);
-  // ドローンのプロペラ音: ハム(のこぎり波)+風切りノイズ(バンドパス)
-  engGain = AC.createGain(); engGain.gain.value = 0;
-  engO1 = AC.createOscillator(); engO1.type = 'sawtooth';
-  engO2 = AC.createOscillator(); engO2.type = 'triangle';
-  const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 900;
-  engO1.connect(lp); engO2.connect(lp); lp.connect(engGain);
-  const nl = Math.floor(AC.sampleRate*0.5);
-  const nb = AC.createBuffer(1, nl, AC.sampleRate);
-  const nd = nb.getChannelData(0);
-  for(let i=0;i<nl;i++) nd[i] = Math.random()*2-1;
-  engNoise = AC.createBufferSource(); engNoise.buffer = nb; engNoise.loop = true;
-  engBP = AC.createBiquadFilter(); engBP.type = 'bandpass'; engBP.frequency.value = 350; engBP.Q.value = 0.8;
-  const ng = AC.createGain(); ng.gain.value = 0.55;
-  engNoise.connect(engBP); engBP.connect(ng); ng.connect(engGain);
-  engGain.connect(master);
-  engO1.start(); engO2.start(); engNoise.start();
-  startBGM();
-}
-function tone(freq, t, dur, type, vol){
-  const o = AC.createOscillator(), g = AC.createGain();
-  o.type = type; o.frequency.value = freq;
-  g.gain.setValueAtTime(0.0001, t);
-  g.gain.linearRampToValueAtTime(vol, t+0.012);
-  g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
-  o.connect(g); g.connect(master);
-  o.start(t); o.stop(t+dur+0.05);
-}
-let noiseBuf = null;
-function hat(t, vol){
-  if(!noiseBuf){
-    noiseBuf = AC.createBuffer(1, Math.floor(AC.sampleRate*0.1), AC.sampleRate);
-    const d = noiseBuf.getChannelData(0);
-    for(let i=0;i<d.length;i++) d[i] = Math.random()*2-1;
-  }
-  const s = AC.createBufferSource(); s.buffer = noiseBuf;
-  const f = AC.createBiquadFilter(); f.type = 'highpass'; f.frequency.value = 6500;
-  const g = AC.createGain();
-  g.gain.setValueAtTime(vol, t);
-  g.gain.exponentialRampToValueAtTime(0.0001, t+0.045);
-  s.connect(f); f.connect(g); g.connect(master);
-  s.start(t); s.stop(t+0.06);
-}
-const MEL = [72,0,72,76,79,79,0,76,81,0,79,76,79,0,0,0,72,0,72,76,79,79,0,81,83,81,79,76,72,0,0,0];
-const BAS = [48,0,48,48,45,0,45,45,47,0,47,47,43,0,47,0,48,0,48,48,45,0,45,45,47,0,47,47,48,0,0,0];
-let bgmStep = 0, bgmNext = 0;
-function startBGM(){
-  bgmNext = AC.currentTime + 0.15;
-  setInterval(()=>{
-    if(!AC || muted){ bgmNext = Math.max(bgmNext, AC?AC.currentTime:0); }
-    while(AC && bgmNext < AC.currentTime + 0.3){
-      const m = MEL[bgmStep], b = BAS[bgmStep];
-      if(!muted){
-        if(m) tone(nf(m), bgmNext, 0.17, 'square', 0.045);
-        if(b) tone(nf(b-12), bgmNext, 0.2, 'triangle', 0.1);
-        if(bgmStep%2===0) hat(bgmNext, 0.05);
-      }
-      bgmStep = (bgmStep+1)%32;
-      bgmNext += 0.19;
-    }
-  }, 90);
-}
-function sfxBeep(hi){ if(!AC) return; tone(hi?880:660, AC.currentTime, hi?0.5:0.16, 'square', 0.16); }
-function sfxLap(){ if(!AC) return; const t = AC.currentTime; tone(784,t,0.14,'square',0.13); tone(1047,t+0.13,0.24,'square',0.13); }
-function sfxFinish(){
-  if(!AC) return;
-  const t = AC.currentTime;
-  [659,784,880,1319].forEach((f,i)=>tone(f, t+i*0.15, 0.3, 'square', 0.14));
-}
-document.getElementById('btnMute').addEventListener('pointerdown', e=>{
-  e.preventDefault();
-  muted = !muted;
-  document.getElementById('btnMute').textContent = muted?'🔇':'🔊';
-  if(master) master.gain.value = muted?0:0.8;
-});
-
 // ===== ポップアップ =====
 const popupEl = document.getElementById('popup');
 let popTimer = null;
@@ -579,190 +508,146 @@ function popup(txt){
   popupEl.textContent = txt;
   popupEl.classList.add('show');
   clearTimeout(popTimer);
-  popTimer = setTimeout(()=>popupEl.classList.remove('show'), 1400);
+  popTimer = setTimeout(()=>popupEl.classList.remove('show'), 1300);
 }
 
-// ===== 風エフェクト(飛行時の軌跡スプライト) =====
-const winds = [];
-for(let i=0;i<40;i++){
-  const sp = new THREE.Sprite(new THREE.SpriteMaterial({color:0xffffff, transparent:true, opacity:0}));
-  sp.visible = false;
-  scene.add(sp);
-  winds.push({sp, life:0, vx:0, vy:0, vz:0});
-}
-function spawnWind(x, y, z){
-  for(const d of winds){
-    if(d.life <= 0){
-      d.life = 0.5;
-      d.sp.visible = true;
-      d.sp.position.set(x+(Math.random()-0.5)*0.8, y+(Math.random()-0.5)*0.4, z+(Math.random()-0.5)*0.8);
-      d.vx = (Math.random()-0.5)*1.2;
-      d.vy = -0.8-Math.random()*0.8;   // ダウンウォッシュふうに下へ
-      d.vz = (Math.random()-0.5)*1.2;
-      return;
-    }
-  }
-}
-function updateWind(dt){
-  for(const d of winds){
-    if(d.life > 0){
-      d.life -= dt;
-      if(d.life <= 0){ d.sp.visible = false; continue; }
-      d.sp.position.x += d.vx*dt;
-      d.sp.position.y += d.vy*dt;
-      d.sp.position.z += d.vz*dt;
-      const t = 1-d.life/0.5;
-      const s = 0.3+t*1.1;
-      d.sp.scale.set(s, s, 1);
-      d.sp.material.opacity = (1-t)*0.35;
-    }
-  }
+// ===== 通過判定(u跨ぎ) =====
+// prev→now でobsUを跨いだか(前進のみ想定)
+function crossed(prevU, nowU, obsU){
+  const dPrev = uDiff(obsU, prevU);   // 進行方向にどれだけ先か
+  const dNow  = uDiff(obsU, nowU);
+  return dPrev > 0 && dNow <= 0 && dPrev < 0.05;
 }
 
 // ===== プレイヤー更新 =====
-let windAcc = 0;
 function updatePlayer(dt, t){
   const racing = state === 'race';
-  const steer = (input.right?1:0) - (input.left?1:0);
+  const lx = (input.right?1:0) - (input.left?1:0);   // 右+
+  const ly = (input.up?1:0) - (input.down?1:0);
   if(racing && !player.finished){
-    const eff = clamp(player.speed/7+0.15, 0, 1);
-    player.heading -= steer*2.5*eff*dt;
+    player.lat = clamp(player.lat + lx*LAT_SPEED*dt, -LAT_MAX, LAT_MAX);
+    player.alt = clamp(player.alt + ly*ALT_SPEED*dt, ALT_MIN, ALT_MAX);
   }
-  // 速度(アクセル自動)
-  const onTrack = player.gDist < HALF+0.8;
-  const maxSp = onTrack?33:14;
+  // 風ゾーン: 横に流される
+  let inWind = false;
   if(racing && !player.finished){
-    player.speed += (maxSp-player.speed)*0.55*dt;
-    player.speed -= player.speed*Math.abs(steer)*0.22*dt;
-  } else {
-    player.speed = Math.max(0, player.speed-12*dt);
-  }
-  // 移動(u座標系の地面追従のみ / 物理エンジン不使用)
-  const dirX = Math.sin(player.heading), dirZ = Math.cos(player.heading);
-  player.x += dirX*player.speed*dt;
-  player.z += dirZ*player.speed*dt;
-  const r = Math.hypot(player.x, player.z);
-  if(r > 185){ player.x *= 185/r; player.z *= 185/r; player.speed *= 0.9; }
-  // 高さ = 地面 + 固定オフセット + サイン波(ふわふわ演出)
-  const gi = groundInfo(player.x, player.z, player.idx);
-  player.idx = gi.idx; player.gDist = gi.dist;
-  const targetY = gi.h + HOVER + BOB_AMP*Math.sin(t*2.1+player.bobPhase);
-  // 地形の段差でカクつかないよう軽くスムージング(+地面めり込み防止クランプ)
-  player.y = Math.max(lerp(player.y, targetY, 1-Math.exp(-8*dt)), gi.h + 0.7);
-  player.gy = gi.h;
-  // ダウンウォッシュ演出
-  if(player.speed > 8){
-    windAcc += dt;
-    while(windAcc > 0.06){
-      windAcc -= 0.06;
-      spawnWind(player.x-dirX*0.6, player.y-0.5, player.z-dirZ*0.6);
+    for(const w of WIND_DEFS){
+      if(uDiff(player.u, w.a) >= 0 && uDiff(w.b, player.u) >= 0){
+        player.lat = clamp(player.lat + w.push*dt, -LAT_MAX, LAT_MAX);
+        inWind = true;
+      }
     }
   }
-  // ラップ判定
-  const u = gi.u;
-  if(u > 0.45 && u < 0.6) player.cp = true;
-  if(!player.finished && player.prevU > 0.9 && u < 0.1 && player.cp){
-    player.lap++;
-    player.cp = false;
-    if(player.lap >= 3) finishPlayer();
-    else { popup('ラップ '+(player.lap+1)+'/3！'); sfxLap(); }
+  if(inWind && !player.inWind) popup('💨 かぜに ながされる！');
+  player.inWind = inWind;
+  // 速度
+  if(player.boostT > 0){ player.boostT -= dt; if(player.boostT <= 0) player.boostMult = 1; }
+  if(player.hitCool > 0) player.hitCool -= dt;
+  if(player.wobble > 0) player.wobble = Math.max(0, player.wobble - dt*1.4);
+  if(racing && !player.finished){
+    const target = BASE_SP * player.boostMult;
+    player.speed += (target - player.speed) * 1.6 * dt;
+  } else {
+    player.speed = Math.max(0, player.speed - 14*dt);
   }
-  player.prevU = u;
-  player.u = u;
-  // 姿勢: 前進で前傾、旋回でロール(すべて見た目の演出)
-  const targetPitch = clamp(player.speed*0.011, 0, 0.32);
+  // u進行
+  player.prevU = player.u;
+  player.uTotal += player.speed/trackLen*dt;
+  player.u = wrap01(player.uTotal);
+  // 判定(レース中のみ)
+  if(racing && !player.finished){
+    // リング
+    for(const r of rings){
+      if(crossed(player.prevU, player.u, r.u)){
+        const d = Math.hypot(player.lat - r.lat, player.alt - r.alt);
+        if(r.takenLap !== player.lap && d < 1.7){
+          r.takenLap = player.lap;
+          player.ringCount++;
+          player.boostT = RING_BOOST_T; player.boostMult = RING_BOOST_MULT;
+          if(r.final){
+            player.finalStreak++;
+            if(player.finalStreak >= 3){
+              player.boostT = FINISH_BOOST_T; player.boostMult = FINISH_BOOST_MULT;
+              popup('🔥 フィニッシュブースト！！');
+            } else popup('✨ あと'+(3-player.finalStreak)+'つ！');
+          } else popup('✨ リングボーナス！');
+        } else if(r.final && r.takenLap !== player.lap){
+          player.finalStreak = 0; // ゴール前リングを逃した
+        }
+      }
+    }
+    // バー障害物
+    for(const b of bars){
+      if(crossed(player.prevU, player.u, b.u) && player.hitCool <= 0){
+        let hit = false;
+        if(b.kind === 'high') hit = player.alt > 2.6;
+        else if(b.kind === 'low') hit = player.alt < 2.5;
+        else hit = player.lat * b.side > -0.4;
+        if(hit){
+          player.speed *= HIT_SLOW;
+          player.hitCool = HIT_COOL;
+          player.wobble = 1;
+          player.finalStreak = 0;
+          popup('💥 ぶつかった！');
+        }
+      }
+    }
+    // スター
+    for(const s of stars){
+      if(!s.taken && crossed(player.prevU, player.u, s.u)){
+        if(Math.hypot(player.lat - s.lat, player.alt - s.alt) < 1.5){
+          s.taken = true;
+          s.mesh.visible = false;
+          player.starCount++;
+          popup('⭐ スター '+player.starCount+'こ！');
+        }
+      }
+    }
+    // ラップ判定(piyo-cross同様)
+    if(player.u > 0.45 && player.u < 0.6) player.cp = true;
+    if(player.prevU > 0.9 && player.u < 0.1 && player.cp){
+      player.lap++;
+      player.cp = false;
+      player.finalStreak = 0;
+      if(player.lap >= 3) finishPlayer();
+      else popup('ラップ '+(player.lap+1)+'/3！');
+    }
+  }
+  // ワールド座標
+  samplePos(player.u, _sp);
+  player.x = _sp.x + _sp.lx*player.lat;
+  player.z = _sp.z + _sp.lz*player.lat;
+  const bob = BOB_AMP*Math.sin(t*2.1);
+  player.y = baseAt(player.u, player.lat) + player.alt + bob;
+  player.heading = Math.atan2(_sp.tx, _sp.tz);
+  // 姿勢演出: 横移動でロール、上下でピッチ、衝突でぐらつき
+  const shake = player.wobble>0 ? Math.sin(t*30)*player.wobble*0.45 : 0;
+  player.roll = lerp(player.roll, -lx*0.45, 1-Math.exp(-8*dt));
+  const targetPitch = clamp(player.speed*0.008, 0, 0.28) - ly*0.22;
   player.pitch = lerp(player.pitch, targetPitch, 1-Math.exp(-6*dt));
-  player.roll = lerp(player.roll, steer*0.5, 1-Math.exp(-8*dt));
-  const g = player.vis.group;
+  const g = pv.group;
   g.position.set(player.x, player.y, player.z);
   g.rotation.y = player.heading;
-  g.rotation.x = player.pitch;   // +で前傾(機首下げ)
-  g.rotation.z = player.roll;
-  // プロペラ常時回転
-  const spin = (28 + player.speed*0.8)*dt;
-  for(let i=0;i<player.vis.props.length;i++){
-    player.vis.props[i].rotation.y += spin*(i%2===0?1:-1);
-  }
-  player.vis.shadow.position.set(player.x, gi.h+0.06, player.z);
-  player.vis.shadow.material.opacity = 0.3*clamp(1-(player.y-gi.h)*0.12, 0.15, 1);
+  g.rotation.x = player.pitch;
+  g.rotation.z = player.roll + shake;
+  const spin = (28 + player.speed*0.9)*dt;
+  for(let i=0;i<pv.props.length;i++) pv.props[i].rotation.y += spin*(i%2===0?1:-1);
+  const gy = player.y - player.alt - bob;
+  pv.shadow.position.set(player.x, gy+0.06, player.z);
+  pv.shadow.material.opacity = 0.3*clamp(1-player.alt*0.1, 0.12, 1);
 }
 
-// ===== AI更新(piyo-cross同様: u座標に沿って進むだけ) =====
-const _sp = {x:0, z:0, tx:0, tz:0, lx:0, lz:0};
-function samplePos(u, out){
-  const f = wrap01(u)*N, i = Math.floor(f)%N, j = (i+1)%N, t = f-i;
-  const a = samples[i], b = samples[j];
-  out.x = a.pos.x*(1-t)+b.pos.x*t;
-  out.z = a.pos.z*(1-t)+b.pos.z*t;
-  out.tx = a.tan.x*(1-t)+b.tan.x*t;
-  out.tz = a.tan.z*(1-t)+b.tan.z*t;
-  out.lx = a.left.x*(1-t)+b.left.x*t;
-  out.lz = a.left.z*(1-t)+b.left.z*t;
-}
-function updateAI(a, dt, t){
-  if(state === 'race' || state === 'finished'){
-    const playerProg = player.lap + player.u;
-    const spd = a.base * (1 + clamp((playerProg-a.uTotal)*0.5, -0.15, 0.18));
-    a.uTotal += spd/trackLen*dt;
-  }
-  if(!a.finished && a.uTotal >= 3){ a.finished = true; finishedAI++; }
-  const u = wrap01(a.uTotal);
-  const blendW = clamp(raceTime/3, 0, 1);
-  const prevOff = a.off;
-  const wander = Math.sin(t*a.wRate*2+a.phase)*2.6;
-  a.off = lerp(a.startLat, wander, blendW);
-  samplePos(u, _sp);
-  const x = _sp.x+_sp.lx*a.off, z = _sp.z+_sp.lz*a.off;
-  a.gx = x; a.gz = z;
-  // 高さ = トラック高 + 固定オフセット + サイン波(プレイヤーと同じ演出)
-  const gy = trackYat(u) + featureH(u);
-  a.y = gy + HOVER + BOB_AMP*Math.sin(t*2.1+a.bobPhase);
-  const g = a.vis.group;
-  g.position.set(x, a.y, z);
-  g.rotation.y = Math.atan2(_sp.tx, _sp.tz);
-  a.pitch = lerp(a.pitch, clamp(a.base*0.011, 0, 0.32), 1-Math.exp(-6*dt));
-  g.rotation.x = a.pitch;
-  // 横移動に応じたロール演出
-  const latVel = dt>0 ? (a.off-prevOff)/dt : 0;
-  a.roll = lerp(a.roll, clamp(-latVel*0.35, -0.45, 0.45), 1-Math.exp(-6*dt));
-  g.rotation.z = a.roll;
-  const spin = (28 + a.base*0.8)*dt;
-  for(let i=0;i<a.vis.props.length;i++){
-    a.vis.props[i].rotation.y += spin*(i%2===0?1:-1);
-  }
-  a.vis.shadow.position.set(x, gy+0.06, z);
-  a.vis.shadow.material.opacity = 0.3*clamp(1-(a.y-gy)*0.12, 0.15, 1);
-}
-
-// ===== 接触 =====
-function collide(){
-  for(const a of ais){
-    const dx = player.x-a.gx, dz = player.z-a.gz;
-    const d = Math.hypot(dx, dz);
-    if(d < 1.7 && d > 0.001 && Math.abs(player.y-a.y) < 1.4){
-      const push = (1.7-d);
-      player.x += dx/d*push*0.6;
-      player.z += dz/d*push*0.6;
-      player.speed *= 0.985;
-    }
-  }
-}
-
-// ===== 順位・ゴール =====
-function calcRank(){
-  const p = player.lap + player.u;
-  let r = 1;
-  for(const a of ais) if(a.uTotal > p+0.001) r++;
-  return r;
-}
+// ===== ゴール =====
 function finishPlayer(){
   player.finished = true;
-  finalRank = finishedAI + 1;
   state = 'finished';
-  sfxFinish();
-  const medal = finalRank===1?' 🏆':finalRank===2?' 🥈':finalRank===3?' 🥉':'';
-  document.getElementById('rankBig').textContent = finalRank+'位'+medal;
-  document.getElementById('resTime').textContent = 'タイム '+fmtTime(raceTime);
+  const best = loadBest();
+  const isBest = best===null || raceTime < best;
+  if(isBest) saveBest(raceTime);
+  document.getElementById('resTimeBig').textContent = fmtTime(raceTime);
+  document.getElementById('resBest').textContent = isBest ? '🎉 自己ベスト更新！' : ('自己ベスト '+fmtTime(best));
+  document.getElementById('resStar').textContent = '⭐ '+player.starCount+'こ / '+stars.length+'こ';
+  document.getElementById('resRing').textContent = '✨ リング '+player.ringCount+'回';
   setTimeout(()=>document.getElementById('resultOv').classList.remove('hidden'), 900);
 }
 function fmtTime(t){
@@ -779,24 +664,19 @@ let mmPts = null, mmB = null;
     minX = Math.min(minX, s.pos.x); maxX = Math.max(maxX, s.pos.x);
     minZ = Math.min(minZ, s.pos.z); maxZ = Math.max(maxZ, s.pos.z);
   }
-  const pad = 14, W = 240;
+  const pad = 14, W = 220;
   const sc = Math.min((W-pad*2)/(maxX-minX), (W-pad*2)/(maxZ-minZ));
   mmB = {minX, minZ, sc, pad};
   mmPts = samples.filter((_,i)=>i%8===0).map(s=>[pad+(s.pos.x-minX)*sc, pad+(s.pos.z-minZ)*sc]);
 }
 function mmXY(x, z){ return [mmB.pad+(x-mmB.minX)*mmB.sc, mmB.pad+(z-mmB.minZ)*mmB.sc]; }
 function drawMM(){
-  mmC.clearRect(0, 0, 240, 240);
+  mmC.clearRect(0, 0, 220, 220);
   mmC.beginPath();
   mmPts.forEach((p,i)=>{ if(i===0) mmC.moveTo(p[0],p[1]); else mmC.lineTo(p[0],p[1]); });
   mmC.closePath();
   mmC.lineWidth = 8; mmC.strokeStyle = 'rgba(0,0,0,0.35)'; mmC.stroke();
   mmC.lineWidth = 4.5; mmC.strokeStyle = '#7ab0e8'; mmC.stroke();
-  for(const a of ais){
-    const [px, py] = mmXY(a.gx, a.gz);
-    mmC.fillStyle = a.colStr;
-    mmC.beginPath(); mmC.arc(px, py, 5.5, 0, 6.284); mmC.fill();
-  }
   const [px, py] = mmXY(player.x, player.z);
   mmC.fillStyle = '#fff';
   mmC.beginPath(); mmC.arc(px, py, 7.5, 0, 6.284); mmC.fill();
@@ -816,8 +696,8 @@ function updateCamera(dt){
   }
   const dirX = Math.sin(player.heading), dirZ = Math.cos(player.heading);
   const tx = player.x-dirX*9, tz = player.z-dirZ*9;
-  const gyC = groundInfo(tx, tz, player.idx).h;
-  const ty = Math.max(player.y+3.6, gyC+1.6);
+  const gh = terrainH(tx,tz)+grassBump(tx,tz);
+  const ty = Math.max(player.y+3.4, gh+1.6);
   if(firstCam){
     camera.position.set(tx, ty, tz);
     firstCam = false;
@@ -827,27 +707,29 @@ function updateCamera(dt){
     camera.position.y += (ty-camera.position.y)*k;
     camera.position.z += (tz-camera.position.z)*k;
   }
-  camLook.set(player.x+dirX*5, player.y+1.2, player.z+dirZ*5);
+  camLook.set(player.x+dirX*5, player.y+1.0, player.z+dirZ*5);
   camera.lookAt(camLook);
 }
 
 // ===== HUD =====
 const lapEl = document.getElementById('lapEl');
 const timeEl = document.getElementById('timeEl');
-const rankEl = document.getElementById('rankEl');
+const starEl = document.getElementById('starEl');
 const spdEl = document.getElementById('spd');
 function updateHUD(){
   lapEl.textContent = 'LAP '+Math.min(player.lap+1, 3)+'/3';
   timeEl.textContent = fmtTime(raceTime);
-  const r = player.finished ? finalRank : calcRank();
-  rankEl.textContent = r+'位/4';
+  starEl.textContent = '⭐'+player.starCount;
   spdEl.textContent = Math.round(player.speed*3.6)+' km/h';
 }
 
 // ===== 開始ボタン =====
+function showTitleBest(){
+  const best = loadBest();
+  document.getElementById('titleBest').textContent = best!==null ? '自己ベスト '+fmtTime(best) : '';
+}
+showTitleBest();
 document.getElementById('btnStart').addEventListener('click', ()=>{
-  initAudio();
-  if(AC.state === 'suspended') AC.resume();
   document.getElementById('titleOv').classList.add('hidden');
   resetRace();
   firstCam = true;
@@ -869,12 +751,9 @@ function loop(){
     const n = Math.ceil(countT);
     if(n !== lastCount){
       lastCount = n;
-      if(n > 0){
-        cdEl.textContent = n;
-        sfxBeep(false);
-      } else {
+      if(n > 0) cdEl.textContent = n;
+      else {
         cdEl.textContent = 'GO!';
-        sfxBeep(true);
         state = 'race';
         setTimeout(()=>{ cdEl.textContent = ''; }, 700);
       }
@@ -882,21 +761,27 @@ function loop(){
   }
   if(state === 'race') raceTime += dt;
   updatePlayer(dt, t);
-  for(const a of ais) updateAI(a, dt, t);
-  collide();
-  updateWind(dt);
+  // オブジェクトのアニメーション
+  for(const r of rings){
+    const active = r.takenLap !== player.lap;
+    r.mesh.visible = true;
+    const sc = active ? 1 + 0.06*Math.sin(t*4 + r.u*40) : 0.55;
+    r.mesh.scale.set(sc, sc, sc);
+    r.mesh.material.opacity = 1;
+  }
+  for(const s of stars){
+    if(!s.taken){ s.mesh.rotation.y += dt*2.2; s.mesh.rotation.x = 0.6; }
+  }
+  for(const a of windArrows){
+    a.lat += a.zone.push*dt*1.6;
+    if(a.zone.push > 0 && a.lat > LAT_MAX) a.lat = -LAT_MAX;
+    if(a.zone.push < 0 && a.lat < -LAT_MAX) a.lat = LAT_MAX;
+    samplePos(a.u, _b);
+    a.sp.position.set(_b.x+_b.lx*a.lat, baseAt(a.u, a.lat)+a.alt, _b.z+_b.lz*a.lat);
+  }
   updateCamera(dt);
   updateHUD();
   drawMM();
-  // プロペラ音
-  if(AC && engGain){
-    const on = state==='race' || state==='count' || state==='finished';
-    const f = 68 + player.speed*3.2;
-    engO1.frequency.value = f;
-    engO2.frequency.value = f*0.5;
-    if(engBP) engBP.frequency.value = 280 + player.speed*10;
-    engGain.gain.value = on ? (0.05+player.speed*0.001) : 0;
-  }
   renderer.render(scene, camera);
 }
 loop();
