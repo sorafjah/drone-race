@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>ぴよドローン スカイアタック</title>
+<title>ドローンレーサー１</title>
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;}
@@ -29,6 +29,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#8fd3ff;font-family:
 .panel h1{font-size:32px;color:#2a7fe8;margin-bottom:8px;}
 .panel p{font-size:17px;color:#444;margin:6px 0;}
 .bigbtn{margin-top:16px;display:inline-block;background:#2a7fe8;color:#fff;font-size:24px;font-weight:700;padding:14px 46px;border-radius:40px;border:none;font-family:inherit;cursor:pointer;min-height:44px;}
+.speedBtn{font-family:inherit;font-size:17px;font-weight:700;padding:12px 16px;min-height:48px;border-radius:16px;border:3px solid #cfd8e6;background:#f0f4fa;color:#456;cursor:pointer;}
+.speedBtn.sel{background:#2a7fe8;color:#fff;border-color:#1a5fc0;}
+.speedBtn:active{transform:scale(0.96);}
 .bigbtn:active{transform:scale(0.96);}
 #resTimeBig{font-size:48px;font-weight:700;color:#2a7fe8;margin:8px 0;}
 #resBest{font-size:20px;color:#e8a01e;font-weight:700;margin:4px 0;min-height:26px;}
@@ -52,10 +55,16 @@ html,body{width:100%;height:100%;overflow:hidden;background:#8fd3ff;font-family:
 <div id="popup"></div>
 <div class="ov" id="titleOv">
   <div class="panel">
-    <h1>🚁 ぴよドローン スカイアタック</h1>
+    <h1>ドローンレーサー１</h1>
     <p>空のコースを3しゅう！ タイムアタックだ！</p>
     <p>◀▶で左右、▲▼で上下にうごくよ(前には自動ですすむ)</p>
     <p>✨リングをくぐると<b>スピードアップ</b>！<br>🧱かべは よけよう！ ⭐スターもあつめてね</p>
+    <p style="margin-top:10px;font-weight:700;color:#2a7fe8;">スピードをえらんでね</p>
+    <div id="speedSel" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:4px;">
+      <button class="speedBtn" data-speed="slow">🐢 ゆっくり</button>
+      <button class="speedBtn" data-speed="normal">🚶 ふつう</button>
+      <button class="speedBtn" data-speed="fast">⚡ こうそく</button>
+    </div>
     <p id="titleBest" style="color:#e8a01e;font-weight:700;"></p>
     <button class="bigbtn" id="btnStart">スタート！</button>
   </div>
@@ -310,18 +319,37 @@ function buildDrone(bodyColor, propColor){
 }
 
 // ===== ゲーム定数 =====
-const BASE_SP = 25;         // 基本速度 m/s
+// 速度プリセット: 今までの速度(25)を「こうそく」とし、「ふつう」「ゆっくり」を追加
+const SPEED_PRESETS = {
+  slow:   {label:'ゆっくり', mult:0.5},
+  normal: {label:'ふつう',   mult:0.72},
+  fast:   {label:'こうそく', mult:1.0},
+};
+let speedKey = 'fast';
+const BASE_SP_MAX = 25;     // 「こうそく」時の基本速度 m/s(従来値)
+let BASE_SP = BASE_SP_MAX;  // 選択に応じて更新される基本速度
 const RING_BOOST_T = 1.5;   // リングブースト時間
 const RING_BOOST_MULT = 1.4;
 const FINISH_BOOST_T = 4.0; // フィニッシュブースト
 const FINISH_BOOST_MULT = 1.7;
 const LAT_MAX = 8.0;        // 横移動範囲(拡大)
 const ALT_MIN = 0.5, ALT_MAX = 9.0;  // 上下移動範囲(拡大)
-const LAT_SPEED = 9.0;      // 横移動速度 m/s(拡大)
-const ALT_SPEED = 6.5;      // 上下移動速度 m/s(拡大)
+const LAT_SPEED_MAX = 9.0;  // 「こうそく」時の横移動速度 m/s
+const ALT_SPEED_MAX = 6.5;  // 「こうそく」時の上下移動速度 m/s
+let LAT_SPEED = LAT_SPEED_MAX;
+let ALT_SPEED = ALT_SPEED_MAX;
 const HIT_SLOW = 0.35;      // 衝突時の速度倍率
 const HIT_COOL = 1.2;       // 衝突後の無敵時間
 const BOB_AMP = 0.12;
+function applySpeedPreset(key){
+  speedKey = key;
+  const p = SPEED_PRESETS[key];
+  BASE_SP = BASE_SP_MAX * p.mult;
+  // 操作の効きは速度ほど極端に落とさない(0.8乗)ことで、低速でも操作が単調にならないようにする
+  const opMult = Math.pow(p.mult, 0.8);
+  LAT_SPEED = LAT_SPEED_MAX * opMult;
+  ALT_SPEED = ALT_SPEED_MAX * opMult;
+}
 
 // ===== コースオブジェクト定義 =====
 // リング: u, lat, alt / final=true はゴール前3連続の対象
@@ -442,9 +470,9 @@ let firstCam = true;
 const START_U = (N-12)/N;
 
 // 自己ベスト(localStorageは使えない環境もあるためtry/catch)
-const BEST_KEY = 'piyoDroneSkyAttackBest';
-function loadBest(){ try{ const v = parseFloat(localStorage.getItem(BEST_KEY)); return isFinite(v)?v:null; }catch(e){ return null; } }
-function saveBest(t){ try{ localStorage.setItem(BEST_KEY, String(t)); }catch(e){} }
+const BEST_KEY_PREFIX = 'piyoDroneSkyAttackBest_';
+function loadBest(){ try{ const v = parseFloat(localStorage.getItem(BEST_KEY_PREFIX+speedKey)); return isFinite(v)?v:null; }catch(e){ return null; } }
+function saveBest(t){ try{ localStorage.setItem(BEST_KEY_PREFIX+speedKey, String(t)); }catch(e){} }
 
 function placeRacer(){
   Object.assign(player, {uTotal:START_U, u:START_U, prevU:START_U, lat:0, alt:2.0, speed:0,
@@ -645,7 +673,7 @@ function finishPlayer(){
   const isBest = best===null || raceTime < best;
   if(isBest) saveBest(raceTime);
   document.getElementById('resTimeBig').textContent = fmtTime(raceTime);
-  document.getElementById('resBest').textContent = isBest ? '🎉 自己ベスト更新！' : ('自己ベスト '+fmtTime(best));
+  document.getElementById('resBest').textContent = isBest ? '🎉 自己ベスト更新！' : (SPEED_PRESETS[speedKey].label+'の自己ベスト '+fmtTime(best));
   document.getElementById('resStar').textContent = '⭐ '+player.starCount+'こ / '+stars.length+'こ';
   document.getElementById('resRing').textContent = '✨ リング '+player.ringCount+'回';
   setTimeout(()=>document.getElementById('resultOv').classList.remove('hidden'), 900);
@@ -723,11 +751,26 @@ function updateHUD(){
   spdEl.textContent = Math.round(player.speed*3.6)+' km/h';
 }
 
-// ===== 開始ボタン =====
+// ===== 速度選択 & 開始ボタン =====
 function showTitleBest(){
   const best = loadBest();
-  document.getElementById('titleBest').textContent = best!==null ? '自己ベスト '+fmtTime(best) : '';
+  const label = SPEED_PRESETS[speedKey].label;
+  document.getElementById('titleBest').textContent = best!==null ? label+'の自己ベスト '+fmtTime(best) : '';
 }
+function updateSpeedButtons(){
+  document.querySelectorAll('.speedBtn').forEach(b=>{
+    b.classList.toggle('sel', b.dataset.speed === speedKey);
+  });
+}
+document.querySelectorAll('.speedBtn').forEach(btn=>{
+  btn.addEventListener('click', ()=>{
+    applySpeedPreset(btn.dataset.speed);
+    updateSpeedButtons();
+    showTitleBest();
+  });
+});
+applySpeedPreset('fast'); // 既定は今までどおり「こうそく」
+updateSpeedButtons();
 showTitleBest();
 document.getElementById('btnStart').addEventListener('click', ()=>{
   document.getElementById('titleOv').classList.add('hidden');
