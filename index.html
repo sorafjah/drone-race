@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="apple-mobile-web-app-capable" content="yes">
-<title>ドローンレーサー１</title>
+<title>ぴよドローン スカイアタック</title>
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none;-webkit-touch-callout:none;}
@@ -14,13 +14,15 @@ html,body{width:100%;height:100%;overflow:hidden;background:#8fd3ff;font-family:
 #hud{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);left:0;right:0;display:flex;justify-content:center;gap:10px;pointer-events:none;z-index:5;}
 #mm{position:fixed;left:10px;top:calc(env(safe-area-inset-top,0px) + 10px);width:110px;height:110px;z-index:5;pointer-events:none;}
 #spd{position:fixed;right:14px;top:calc(env(safe-area-inset-top,0px) + 10px);z-index:5;pointer-events:none;font-size:18px;}
+#btnMute{position:fixed;right:14px;top:calc(env(safe-area-inset-top,0px) + 42px);z-index:6;padding:8px 12px;border-radius:12px;background:rgba(0,0,0,0.45);color:#fff;font-size:18px;min-height:44px;min-width:44px;border:none;font-family:inherit;cursor:pointer;}
 .rbtn{position:fixed;z-index:6;display:flex;align-items:center;justify-content:center;color:#fff;font-weight:700;touch-action:none;cursor:pointer;
-  width:96px;height:96px;border-radius:50%;background:rgba(255,255,255,0.22);border:3px solid rgba(255,255,255,0.85);font-size:42px;
-  bottom:calc(env(safe-area-inset-bottom,0px) + 26px);}
-#btnL{left:20px;}
-#btnR{left:132px;}
-#btnU{right:20px;bottom:calc(env(safe-area-inset-bottom,0px) + 128px);}
-#btnD{right:20px;}
+  width:96px;height:96px;border-radius:50%;background:rgba(255,255,255,0.22);border:3px solid rgba(255,255,255,0.85);font-size:42px;}
+/* 左側: 上下移動ボタン(縦積み) */
+#btnU{left:20px;bottom:calc(env(safe-area-inset-bottom,0px) + 128px);}
+#btnD{left:20px;bottom:calc(env(safe-area-inset-bottom,0px) + 26px);}
+/* 右側: 左右移動ボタン(横並び) */
+#btnL{right:132px;bottom:calc(env(safe-area-inset-bottom,0px) + 26px);}
+#btnR{right:20px;bottom:calc(env(safe-area-inset-bottom,0px) + 26px);}
 #cd{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;font-size:110px;font-weight:700;color:#fff;text-shadow:0 4px 18px rgba(0,0,0,0.5);pointer-events:none;z-index:8;}
 #popup{position:fixed;top:24%;left:0;right:0;text-align:center;font-size:34px;font-weight:700;color:#ffec6e;text-shadow:0 3px 10px rgba(0,0,0,0.6);pointer-events:none;opacity:0;transform:scale(0.9);transition:opacity .25s, transform .25s;z-index:8;}
 #popup.show{opacity:1;transform:scale(1.08);}
@@ -47,6 +49,7 @@ html,body{width:100%;height:100%;overflow:hidden;background:#8fd3ff;font-family:
   <div class="chip" id="starEl">⭐0</div>
 </div>
 <div class="chip" id="spd">0 km/h</div>
+<button id="btnMute">🔊</button>
 <div class="rbtn" id="btnL">◀</div>
 <div class="rbtn" id="btnR">▶</div>
 <div class="rbtn" id="btnU">▲</div>
@@ -55,9 +58,9 @@ html,body{width:100%;height:100%;overflow:hidden;background:#8fd3ff;font-family:
 <div id="popup"></div>
 <div class="ov" id="titleOv">
   <div class="panel">
-    <h1>ドローンレーサー１</h1>
+    <h1>🚁 ぴよドローン スカイアタック</h1>
     <p>空のコースを3しゅう！ タイムアタックだ！</p>
-    <p>◀▶で左右、▲▼で上下にうごくよ(前には自動ですすむ)</p>
+    <p>ひだり(▲▼)で上下、みぎ(◀▶)で左右にうごくよ(前には自動ですすむ)</p>
     <p>✨リングをくぐると<b>スピードアップ</b>！<br>🧱かべは よけよう！ ⭐スターもあつめてね</p>
     <p style="margin-top:10px;font-weight:700;color:#2a7fe8;">スピードをえらんでね</p>
     <div id="speedSel" style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-top:4px;">
@@ -325,7 +328,7 @@ const SPEED_PRESETS = {
   normal: {label:'ふつう',   mult:0.72},
   fast:   {label:'こうそく', mult:1.0},
 };
-let speedKey = 'fast';
+let speedKey = 'normal';
 const BASE_SP_MAX = 25;     // 「こうそく」時の基本速度 m/s(従来値)
 let BASE_SP = BASE_SP_MAX;  // 選択に応じて更新される基本速度
 const RING_BOOST_T = 1.5;   // リングブースト時間
@@ -384,7 +387,7 @@ const WIND_DEFS = [
 const rings = RING_DEFS.map(d=>{
   const y = baseAt(d.u, d.lat) + d.alt;
   samplePos(d.u, _b);
-  const mesh = new THREE.Mesh(new THREE.TorusGeometry(2.0, 0.2, 10, 28),
+  const mesh = new THREE.Mesh(new THREE.TorusGeometry(4.0, 0.4, 10, 28),
     new THREE.MeshLambertMaterial({color: d.final?0xffb63b:0x3be0c8, emissive: d.final?0xa06010:0x0a7a6a}));
   mesh.position.set(_b.x+_b.lx*d.lat, y, _b.z+_b.lz*d.lat);
   mesh.rotation.y = yawAt(d.u);
@@ -428,7 +431,7 @@ const bars = BAR_DEFS.map(d=>{
 const stars = STAR_DEFS.map(([u,lat,alt])=>{
   const y = baseAt(u, lat) + alt;
   samplePos(u, _b);
-  const mesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.5),
+  const mesh = new THREE.Mesh(new THREE.OctahedronGeometry(1.0),
     new THREE.MeshLambertMaterial({color:0xffd94a, emissive:0x9a7a10}));
   mesh.position.set(_b.x+_b.lx*lat, y, _b.z+_b.lz*lat);
   scene.add(mesh);
@@ -455,6 +458,113 @@ for(const w of WIND_DEFS){
     scene.add(sp);
   }
 }
+
+// ===== Web Audio(合成サウンド) =====
+let AC = null, master = null, muted = false;
+let engGain = null, engO1 = null, engO2 = null, engNoise = null, engBP = null;
+const nf = n=>440*Math.pow(2,(n-69)/12); // MIDIノート番号→周波数
+function initAudio(){
+  if(AC) return;
+  AC = new (window.AudioContext||window.webkitAudioContext)();
+  master = AC.createGain();
+  master.gain.value = muted?0:0.8;
+  master.connect(AC.destination);
+  // プロペラ音: のこぎり波+三角波のハム音をローパスで丸める + 風切りノイズ
+  engGain = AC.createGain(); engGain.gain.value = 0;
+  engO1 = AC.createOscillator(); engO1.type = 'sawtooth';
+  engO2 = AC.createOscillator(); engO2.type = 'triangle';
+  const lp = AC.createBiquadFilter(); lp.type = 'lowpass'; lp.frequency.value = 900;
+  engO1.connect(lp); engO2.connect(lp); lp.connect(engGain);
+  const nl = Math.floor(AC.sampleRate*0.5);
+  const nb = AC.createBuffer(1, nl, AC.sampleRate);
+  const nd = nb.getChannelData(0);
+  for(let i=0;i<nl;i++) nd[i] = Math.random()*2-1;
+  engNoise = AC.createBufferSource(); engNoise.buffer = nb; engNoise.loop = true;
+  engBP = AC.createBiquadFilter(); engBP.type = 'bandpass'; engBP.frequency.value = 350; engBP.Q.value = 0.8;
+  const ng = AC.createGain(); ng.gain.value = 0.5;
+  engNoise.connect(engBP); engBP.connect(ng); ng.connect(engGain);
+  engGain.connect(master);
+  engO1.start(); engO2.start(); engNoise.start();
+  startBGM();
+}
+function tone(freq, t, dur, type, vol){
+  const o = AC.createOscillator(), g = AC.createGain();
+  o.type = type; o.frequency.value = freq;
+  g.gain.setValueAtTime(0.0001, t);
+  g.gain.linearRampToValueAtTime(vol, t+0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+  o.connect(g); g.connect(master);
+  o.start(t); o.stop(t+dur+0.05);
+}
+function sweep(f1, f2, dur, type, vol){
+  if(!AC) return;
+  const t = AC.currentTime;
+  const o = AC.createOscillator(), g = AC.createGain();
+  o.type = type;
+  o.frequency.setValueAtTime(f1, t);
+  o.frequency.exponentialRampToValueAtTime(f2, t+dur);
+  g.gain.setValueAtTime(vol, t);
+  g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+  o.connect(g); g.connect(master);
+  o.start(t); o.stop(t+dur+0.05);
+}
+let noiseBuf = null;
+function thud(t, vol){
+  // 衝突音: 低いノイズバースト
+  if(!AC) return;
+  if(!noiseBuf){
+    noiseBuf = AC.createBuffer(1, Math.floor(AC.sampleRate*0.2), AC.sampleRate);
+    const d = noiseBuf.getChannelData(0);
+    for(let i=0;i<d.length;i++) d[i] = Math.random()*2-1;
+  }
+  const s = AC.createBufferSource(); s.buffer = noiseBuf;
+  const f = AC.createBiquadFilter(); f.type = 'lowpass'; f.frequency.value = 500;
+  const g = AC.createGain();
+  g.gain.setValueAtTime(vol, t);
+  g.gain.exponentialRampToValueAtTime(0.0001, t+0.28);
+  s.connect(f); f.connect(g); g.connect(master);
+  s.start(t); s.stop(t+0.3);
+}
+// 効果音
+function sfxRing(){ if(!AC) return; const t=AC.currentTime; tone(nf(76), t, 0.1, 'sine', 0.16); tone(nf(83), t+0.06, 0.16, 'sine', 0.16); }
+function sfxStar(){ if(!AC) return; const t=AC.currentTime; tone(nf(88), t, 0.09, 'triangle', 0.15); tone(nf(95), t+0.05, 0.14, 'triangle', 0.15); }
+function sfxHit(){ if(!AC) return; thud(AC.currentTime, 0.28); }
+function sfxLap(){ if(!AC) return; const t=AC.currentTime; tone(784,t,0.14,'square',0.14); tone(1047,t+0.13,0.24,'square',0.14); }
+function sfxFinishBoost(){ if(!AC) return; sweep(300, 1100, 0.35, 'sawtooth', 0.16); }
+function sfxWind(){ if(!AC) return; const t=AC.currentTime; const o=AC.createOscillator(), g=AC.createGain();
+  o.type='sine'; o.frequency.setValueAtTime(220,t); o.frequency.linearRampToValueAtTime(160,t+0.4);
+  g.gain.setValueAtTime(0.001,t); g.gain.linearRampToValueAtTime(0.08,t+0.08); g.gain.exponentialRampToValueAtTime(0.0001,t+0.4);
+  o.connect(g); g.connect(master); o.start(t); o.stop(t+0.42); }
+function sfxCount(hi){ if(!AC) return; tone(hi?880:660, AC.currentTime, hi?0.5:0.16, 'square', 0.17); }
+function sfxFinish(){
+  if(!AC) return;
+  const t = AC.currentTime;
+  [659,784,880,1319].forEach((f,i)=>tone(f, t+i*0.15, 0.3, 'square', 0.15));
+}
+// 軽いBGM(8音のシンプルなループ)
+const MEL = [72,0,72,76,79,79,0,76,81,0,79,76,79,0,0,0];
+const BAS = [48,0,48,48,45,0,45,45,47,0,47,47,43,0,43,0];
+let bgmStep = 0, bgmNext = 0;
+function startBGM(){
+  bgmNext = AC.currentTime + 0.15;
+  setInterval(()=>{
+    if(!AC || muted){ bgmNext = Math.max(bgmNext, AC?AC.currentTime:0); }
+    while(AC && bgmNext < AC.currentTime + 0.3){
+      const m = MEL[bgmStep], b = BAS[bgmStep];
+      if(!muted){
+        if(m) tone(nf(m), bgmNext, 0.17, 'square', 0.04);
+        if(b) tone(nf(b-12), bgmNext, 0.2, 'triangle', 0.09);
+      }
+      bgmStep = (bgmStep+1)%16;
+      bgmNext += 0.22;
+    }
+  }, 90);
+}
+document.getElementById('btnMute').addEventListener('click', ()=>{
+  muted = !muted;
+  document.getElementById('btnMute').textContent = muted?'🔇':'🔊';
+  if(master) master.gain.value = muted?0:0.8;
+});
 
 // ===== プレイヤー =====
 const pv = buildDrone(0xffb63b, 0xeeeeee);
@@ -566,7 +676,7 @@ function updatePlayer(dt, t){
       }
     }
   }
-  if(inWind && !player.inWind) popup('💨 かぜに ながされる！');
+  if(inWind && !player.inWind){ popup('💨 かぜに ながされる！'); sfxWind(); }
   player.inWind = inWind;
   // 速度
   if(player.boostT > 0){ player.boostT -= dt; if(player.boostT <= 0) player.boostMult = 1; }
@@ -588,15 +698,17 @@ function updatePlayer(dt, t){
     for(const r of rings){
       if(crossed(player.prevU, player.u, r.u)){
         const d = Math.hypot(player.lat - r.lat, player.alt - r.alt);
-        if(r.takenLap !== player.lap && d < 2.1){
+        if(r.takenLap !== player.lap && d < 3.4){
           r.takenLap = player.lap;
           player.ringCount++;
           player.boostT = RING_BOOST_T; player.boostMult = RING_BOOST_MULT;
+          sfxRing();
           if(r.final){
             player.finalStreak++;
             if(player.finalStreak >= 3){
               player.boostT = FINISH_BOOST_T; player.boostMult = FINISH_BOOST_MULT;
               popup('🔥 フィニッシュブースト！！');
+              sfxFinishBoost();
             } else popup('✨ あと'+(3-player.finalStreak)+'つ！');
           } else popup('✨ リングボーナス！');
         } else if(r.final && r.takenLap !== player.lap){
@@ -617,17 +729,19 @@ function updatePlayer(dt, t){
           player.wobble = 1;
           player.finalStreak = 0;
           popup('💥 ぶつかった！');
+          sfxHit();
         }
       }
     }
     // スター
     for(const s of stars){
       if(!s.taken && crossed(player.prevU, player.u, s.u)){
-        if(Math.hypot(player.lat - s.lat, player.alt - s.alt) < 1.9){
+        if(Math.hypot(player.lat - s.lat, player.alt - s.alt) < 2.5){
           s.taken = true;
           s.mesh.visible = false;
           player.starCount++;
           popup('⭐ スター '+player.starCount+'こ！');
+          sfxStar();
         }
       }
     }
@@ -638,7 +752,7 @@ function updatePlayer(dt, t){
       player.cp = false;
       player.finalStreak = 0;
       if(player.lap >= 3) finishPlayer();
-      else popup('ラップ '+(player.lap+1)+'/3！');
+      else { popup('ラップ '+(player.lap+1)+'/3！'); sfxLap(); }
     }
   }
   // ワールド座標
@@ -669,6 +783,7 @@ function updatePlayer(dt, t){
 function finishPlayer(){
   player.finished = true;
   state = 'finished';
+  sfxFinish();
   const best = loadBest();
   const isBest = best===null || raceTime < best;
   if(isBest) saveBest(raceTime);
@@ -769,10 +884,12 @@ document.querySelectorAll('.speedBtn').forEach(btn=>{
     showTitleBest();
   });
 });
-applySpeedPreset('fast'); // 既定は今までどおり「こうそく」
+applySpeedPreset('normal'); // 既定は「ふつう」
 updateSpeedButtons();
 showTitleBest();
 document.getElementById('btnStart').addEventListener('click', ()=>{
+  initAudio();
+  if(AC.state === 'suspended') AC.resume();
   document.getElementById('titleOv').classList.add('hidden');
   resetRace();
   firstCam = true;
@@ -794,9 +911,10 @@ function loop(){
     const n = Math.ceil(countT);
     if(n !== lastCount){
       lastCount = n;
-      if(n > 0) cdEl.textContent = n;
+      if(n > 0){ cdEl.textContent = n; sfxCount(false); }
       else {
         cdEl.textContent = 'GO!';
+        sfxCount(true);
         state = 'race';
         setTimeout(()=>{ cdEl.textContent = ''; }, 700);
       }
@@ -804,6 +922,15 @@ function loop(){
   }
   if(state === 'race') raceTime += dt;
   updatePlayer(dt, t);
+  // プロペラ音(速度に応じてピッチと音量を変化)
+  if(AC && engGain){
+    const on = state==='race' || state==='count' || state==='finished';
+    const f = 68 + player.speed*3.2;
+    engO1.frequency.value = f;
+    engO2.frequency.value = f*0.5;
+    if(engBP) engBP.frequency.value = 280 + player.speed*10;
+    engGain.gain.value = on ? (0.05+player.speed*0.001) : 0;
+  }
   // オブジェクトのアニメーション
   for(const r of rings){
     const active = r.takenLap !== player.lap;
